@@ -6,7 +6,9 @@
     "commit": "git reset HEAD -- . && git add . && git commit -m \"Update $(basename $PWD)\"",
     "build": "parcel build",
     "prepare": "npm run build",
-    "postpublish": "npm run commit"
+    "postpublish": "npm run commit",
+    "pretest": "npm run build",
+    "test": "jest"
   },
   "publishConfig": {
     "access": "public"
@@ -23,6 +25,7 @@
     "lru-cache": "^7.14.0"
   },
   "devDependencies": {
+    "jest": "^29.0.1",
     "parcel": "latest",
     "prettier": "^2.7.1"
   }

@@ -52,3 +52,5 @@ dist
 .pnp.*
 .idea
 .idea/sonarlint/issuestore/index.pb
+__tests__/**
+# ignoring tests until i put test data into CI config

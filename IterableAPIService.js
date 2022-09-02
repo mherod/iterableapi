@@ -31,31 +31,36 @@ export default class IterableAPIService {
 
   /**
    *
-   * @param {{iterable_key: string}} config
+   * @param {{iterable_key: string}|string} config
    */
   constructor(config) {
-    this.config = config;
-    if (this.config == null) {
-      throw new Error("config must not be null");
+    if (typeof config == "string") {
+      this.#apiKey = config;
+    } else if (typeof config == "object") {
+      const iterableKey = config.iterable_key;
+      if (badString(iterableKey)) {
+        throw new Error("config must have iterable_key");
+      }
+      this.#apiKey = iterableKey;
     }
-    const iterableKey = this.config.iterable_key;
-    if (typeof iterableKey != "string") {
-      throw new Error("config must have iterable_key");
-    }
-    this.#apiKey = iterableKey;
   }
 
   get #headers() {
     return {
       accept: "application/json; charset=utf-8",
-      "api-key": this.config.iterable_key,
+      "api-key": this.#apiKey,
     };
+  }
+
+  async fetchUserIdByEmail(email) {
+    const user = await this.fetchUserByEmail(email);
+    return user.userId;
   }
 
   /**
    *
    * @param {string} email
-   * @return {Promise<*>}
+   * @return {Promise<*|null>}
    */
   async fetchUserByEmail(email) {
     if (badEmail(email)) {
@@ -68,12 +73,9 @@ export default class IterableAPIService {
       return caches.userByEmail.get(email);
     }
     try {
-      let urlString;
-      urlString = "https://api.iterable.com/api/users/getByEmail";
-      const url = new URL(urlString);
+      const url = new URL("https://api.iterable.com/api/users/getByEmail");
       url.searchParams.set("email", email);
-      urlString = url.toString();
-      const response = await fetch(urlString, {
+      const response = await fetch(url, {
         method: "GET",
         headers: this.#headers,
       });
@@ -114,12 +116,9 @@ export default class IterableAPIService {
       return caches.userByUserId.get(userId);
     }
     try {
-      let urlString;
-      urlString = "https://api.iterable.com/api/users/byUserId";
-      const url = new URL(urlString);
+      const url = new URL("https://api.iterable.com/api/users/byUserId");
       url.searchParams.set("userId", userId);
-      urlString = url.toString();
-      const response = await fetch(urlString, {
+      const response = await fetch(url, {
         method: "GET",
         headers: this.#headers,
       });
@@ -157,7 +156,7 @@ export default class IterableAPIService {
       );
       return null;
     }
-    if (typeof description !== "string" || description.length === 0) {
+    if (badString(description)) {
       logger.warn(
         "IterableAPIService.createStaticList: description is not a string or is empty"
       );
@@ -270,13 +269,14 @@ export default class IterableAPIService {
     }
     try {
       const emailUriEncoded = encodeURIComponent(email);
-      const response = await fetch(
-        `https://api.iterable.com/api/events/${emailUriEncoded}?limit=200`,
-        {
-          method: "GET",
-          headers: this.#headers,
-        }
+      const url = new URL(
+        `https://api.iterable.com/api/events/${emailUriEncoded}`
       );
+      url.searchParams.set("limit", "200");
+      const response = await fetch(url, {
+        method: "GET",
+        headers: this.#headers,
+      });
       const json = await response.json();
       events.push(...json["events"]);
     } catch (e) {
