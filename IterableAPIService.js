@@ -52,13 +52,13 @@ export default class IterableAPIService {
   async fetchUserByEmail(email) {
     if (typeof email !== "string" || email.length === 0) {
       logger.warn(
-        "IterableDataService.fetchUserByEmail: email is not a string or is empty"
+        "IterableAPIService.fetchUserByEmail: email is not a string or is empty"
       );
       return null;
     }
     if (email.match(/^[^@]+@[^@]+\.[^@]+$/) === null) {
       logger.warn(
-        "IterableDataService.fetchUserByEmail: email is not a valid email"
+        "IterableAPIService.fetchUserByEmail: email is not a valid email"
       );
       return null;
     }
@@ -85,7 +85,7 @@ export default class IterableAPIService {
         }
       } else {
         logger.warn(
-          "IterableDataService.fetchUserByEmail: response is not json. contentType:",
+          "IterableAPIService.fetchUserByEmail: response is not json. contentType:",
           responseContentType
         );
       }
@@ -104,7 +104,7 @@ export default class IterableAPIService {
   async fetchUserByUserId(userId) {
     if (badString(userId)) {
       logger.warn(
-        "IterableDataService.fetchUserByUserId: userId is not a string or is empty"
+        "IterableAPIService.fetchUserByUserId: userId is not a string or is empty"
       );
       return null;
     }
@@ -131,7 +131,7 @@ export default class IterableAPIService {
         }
       } else {
         logger.warn(
-          "IterableDataService.fetchUserByUserId: response is not json. contentType:",
+          "IterableAPIService.fetchUserByUserId: response is not json. contentType:",
           responseContentType
         );
       }
@@ -151,13 +151,13 @@ export default class IterableAPIService {
   async createStaticList({ name, description }) {
     if (typeof name !== "string" || name.length === 0) {
       logger.warn(
-        "IterableDataService.createStaticList: name is not a string or is empty"
+        "IterableAPIService.createStaticList: name is not a string or is empty"
       );
       return null;
     }
     if (typeof description !== "string" || description.length === 0) {
       logger.warn(
-        "IterableDataService.createStaticList: description is not a string or is empty"
+        "IterableAPIService.createStaticList: description is not a string or is empty"
       );
       return null;
     }
@@ -198,7 +198,7 @@ export default class IterableAPIService {
   async fetchListUsers(listId) {
     if (typeof listId !== "string" || listId.length === 0) {
       logger.warn(
-        "IterableDataService.fetchList: listId is not a string or is empty"
+        "IterableAPIService.fetchList: listId is not a string or is empty"
       );
       return null;
     }
@@ -227,12 +227,12 @@ export default class IterableAPIService {
   async subscribeToList(listId, subscribers = []) {
     if (badString(listId) && badNumber(listId)) {
       throw new Error(
-        "IterableDataService.subscribeToList: listId is not a string or is empty"
+        "IterableAPIService.subscribeToList: listId is not a string or is empty"
       );
     }
     if (!Array.isArray(subscribers)) {
       throw new Error(
-        "IterableDataService.subscribeToList: subscribers is not an array"
+        "IterableAPIService.subscribeToList: subscribers is not an array"
       );
     }
     try {
@@ -263,7 +263,7 @@ export default class IterableAPIService {
     const events = [];
     if (typeof email !== "string" || email.length === 0) {
       logger.warn(
-        "IterableDataService.fetchUserEvents: email is not a string or is empty"
+        "IterableAPIService.fetchUserEvents: email is not a string or is empty"
       );
       return events;
     }
@@ -312,7 +312,7 @@ export default class IterableAPIService {
   async fetchInAppMessagesForUser(userId) {
     if (typeof userId !== "string" || userId.length === 0) {
       logger.warn(
-        "IterableDataService.fetchInAppMessagesForUser: userId is not a string or is empty"
+        "IterableAPIService.fetchInAppMessagesForUser: userId is not a string or is empty"
       );
       return null;
     }
@@ -358,19 +358,19 @@ export default class IterableAPIService {
   }) {
     if (typeof userId !== "string" || userId.length === 0) {
       logger.warn(
-        "IterableDataService.trackInAppMessageEvent: userId is not a string or is empty"
+        "IterableAPIService.trackInAppMessageEvent: userId is not a string or is empty"
       );
       return null;
     }
     if (typeof messageId !== "string" || messageId.length === 0) {
       logger.warn(
-        "IterableDataService.trackInAppMessageEvent: messageId is not a string or is empty"
+        "IterableAPIService.trackInAppMessageEvent: messageId is not a string or is empty"
       );
       return null;
     }
     if (typeof event !== "string" || event.length === 0) {
       logger.warn(
-        "IterableDataService.trackInAppMessageEvent: event is not a string or it is empty"
+        "IterableAPIService.trackInAppMessageEvent: event is not a string or it is empty"
       );
     }
     const body = {
@@ -402,12 +402,12 @@ export default class IterableAPIService {
   async updateTemplate(type, body) {
     if (typeof type !== "string" || type.length === 0) {
       logger.warn(
-        "IterableDataService.updateTemplate: type is not a string or is empty"
+        "IterableAPIService.updateTemplate: type is not a string or is empty"
       );
       return null;
     }
     if (typeof body !== "object") {
-      logger.warn("IterableDataService.updateTemplate: body is not an object");
+      logger.warn("IterableAPIService.updateTemplate: body is not an object");
       return null;
     }
     try {
@@ -436,7 +436,7 @@ export default class IterableAPIService {
   async putUserData({ email, userId, dataFields }) {
     if (email === undefined && userId === undefined) {
       logger.warn(
-        "IterableDataService.putUserData: must define either email or userId"
+        "IterableAPIService.putUserData: must define either email or userId"
       );
       return null;
     }
@@ -479,19 +479,19 @@ export default class IterableAPIService {
   async listCatalogItems(catalog, page = 1, limit = 100) {
     if (typeof catalog !== "string" || catalog.length === 0) {
       logger.warn(
-        "IterableDataService.listCatalogItems: catalog is not a string or is empty"
+        "IterableAPIService.listCatalogItems: catalog is not a string or is empty"
       );
       return null;
     }
     if (typeof page !== "string" && typeof page !== "number") {
       logger.warn(
-        "IterableDataService.listCatalogItems: page is not a string or number"
+        "IterableAPIService.listCatalogItems: page is not a string or number"
       );
       return null;
     }
     if (typeof limit !== "string" && typeof limit !== "number") {
       logger.warn(
-        "IterableDataService.listCatalogItems: limit is not a string or number"
+        "IterableAPIService.listCatalogItems: limit is not a string or number"
       );
       return null;
     }
@@ -522,19 +522,19 @@ export default class IterableAPIService {
   async createOrReplaceCatalogItem(catalog, itemId, item) {
     if (typeof catalog !== "string" || catalog.length === 0) {
       logger.warn(
-        "IterableDataService.createOrReplaceCatalogItem: catalog is not a string or is empty"
+        "IterableAPIService.createOrReplaceCatalogItem: catalog is not a string or is empty"
       );
       return null;
     }
     if (typeof itemId !== "string" || itemId.length === 0) {
       logger.warn(
-        "IterableDataService.createOrReplaceCatalogItem: itemId is not a string or is empty"
+        "IterableAPIService.createOrReplaceCatalogItem: itemId is not a string or is empty"
       );
       return null;
     }
     if (typeof item !== "object") {
       logger.warn(
-        "IterableDataService.createOrReplaceCatalogItem: item is not an object"
+        "IterableAPIService.createOrReplaceCatalogItem: item is not an object"
       );
       return null;
     }
@@ -567,19 +567,19 @@ export default class IterableAPIService {
   async createOrUpdateCatalogItem(catalog, itemId, item) {
     if (typeof catalog !== "string" || catalog.length === 0) {
       logger.warn(
-        "IterableDataService.createOrUpdateCatalogItem: catalog is not a string or is empty"
+        "IterableAPIService.createOrUpdateCatalogItem: catalog is not a string or is empty"
       );
       return null;
     }
     if (typeof itemId !== "string" || itemId.length === 0) {
       logger.warn(
-        "IterableDataService.createOrUpdateCatalogItem: itemId is not a string or is empty"
+        "IterableAPIService.createOrUpdateCatalogItem: itemId is not a string or is empty"
       );
       return null;
     }
     if (typeof item !== "object") {
       logger.warn(
-        "IterableDataService.createOrUpdateCatalogItem: item is not an object"
+        "IterableAPIService.createOrUpdateCatalogItem: item is not an object"
       );
       return null;
     }
@@ -609,13 +609,13 @@ export default class IterableAPIService {
   async deleteCatalogItem(catalog, itemId) {
     if (typeof catalog !== "string" || catalog.length === 0) {
       logger.warn(
-        "IterableDataService.deleteCatalogItem: catalog is not a string or is empty"
+        "IterableAPIService.deleteCatalogItem: catalog is not a string or is empty"
       );
       return null;
     }
     if (typeof itemId !== "string" && !Array.isArray(itemId)) {
       logger.warn(
-        "IterableDataService.deleteCatalogItem: itemId is not a string or array"
+        "IterableAPIService.deleteCatalogItem: itemId is not a string or array"
       );
       return null;
     }
@@ -626,7 +626,7 @@ export default class IterableAPIService {
       itemIds.push(...itemId);
     } else {
       logger.warn(
-        "IterableDataService.deleteCatalogItem: itemId must be a string or array of strings"
+        "IterableAPIService.deleteCatalogItem: itemId must be a string or array of strings"
       );
       return null;
     }
@@ -652,13 +652,13 @@ export default class IterableAPIService {
   async triggerInAppForUserId(userId, campaignId) {
     if (typeof userId !== "string" || userId.length === 0) {
       logger.warn(
-        "IterableDataService.triggerInAppForUserId: userId is not a string or is empty"
+        "IterableAPIService.triggerInAppForUserId: userId is not a string or is empty"
       );
       return null;
     }
     if (typeof campaignId !== "string" || campaignId.length === 0) {
       logger.warn(
-        "IterableDataService.triggerInAppForUserId: campaignId is not a string or is empty"
+        "IterableAPIService.triggerInAppForUserId: campaignId is not a string or is empty"
       );
       return null;
     }
@@ -684,13 +684,13 @@ export default class IterableAPIService {
   async triggerInAppForEmail(email, campaignId) {
     if (typeof email !== "string" || email.length === 0) {
       logger.warn(
-        "IterableDataService.triggerInAppForEmail: email is not a string or is empty"
+        "IterableAPIService.triggerInAppForEmail: email is not a string or is empty"
       );
       return null;
     }
     if (typeof campaignId !== "string" || campaignId.length === 0) {
       logger.warn(
-        "IterableDataService.triggerInAppForUserId: campaignId is not a string or is empty"
+        "IterableAPIService.triggerInAppForUserId: campaignId is not a string or is empty"
       );
       return null;
     }
