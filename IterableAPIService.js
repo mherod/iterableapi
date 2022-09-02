@@ -26,7 +26,6 @@ const caches = {
 
 // noinspection JSUnusedGlobalSymbols
 export default class IterableAPIService {
-  config;
   #apiKey;
 
   /**
