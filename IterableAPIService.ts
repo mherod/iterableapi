@@ -6,23 +6,26 @@ import {
   badObject,
   badString,
   goodEmail,
-  goodString,
+  goodString
 } from "./TypeAssertions";
-import LRU from "lru-cache";
+
 import { emailRegExp } from "./RegExps";
+import MyLRUCache from "./MyLRUCache";
 
 const logger = console;
 
 const caches = {
-  userByUserId: new LRU({
+  userByUserId: new MyLRUCache({
     max: 1000,
-    ttl: 1000 * 60 * 5, // 5 minutes
+    ttl: 1000 * 60 * 5 // 5 minutes
   }),
-  userByEmail: new LRU({
+  userByEmail: new MyLRUCache({
     max: 1000,
-    ttl: 1000 * 60 * 5, // 5 minutes
-  }),
+    ttl: 1000 * 60 * 5 // 5 minutes
+  })
 };
+
+export type UncheckedObject = any;
 
 export interface IterableUser {
   userId: string;
@@ -56,10 +59,15 @@ export default class IterableAPIService {
     }
   }
 
-  get #headers() {
+  get #headers(): {
+    //
+    "api-key": string;
+    accept: "application/json; charset=utf-8"
+    //
+  } {
     return {
       accept: "application/json; charset=utf-8",
-      "api-key": this.#apiKey,
+      "api-key": this.#apiKey
     };
   }
 
@@ -68,12 +76,7 @@ export default class IterableAPIService {
     return user.userId;
   }
 
-  /**
-   *
-   * @param {string} email
-   * @return {Promise<*|null>}
-   */
-  async fetchUserByEmail(email): Promise<IterableUser> {
+  async fetchUserByEmail(email: string): Promise<IterableUser> {
     if (badEmail(email)) {
       logger.warn(
         "IterableAPIService.fetchUserByEmail: email is not a valid email"
@@ -88,7 +91,7 @@ export default class IterableAPIService {
       url.searchParams.set("email", email);
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       const responseContentType = response.headers.get("content-type");
       const user = {};
@@ -131,7 +134,7 @@ export default class IterableAPIService {
       url.searchParams.set("userId", userId);
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       const responseContentType = response.headers.get("content-type");
       const user = {};
@@ -160,7 +163,13 @@ export default class IterableAPIService {
    * @param description
    * @returns {Promise<null|({listId : number})>}
    */
-  async createStaticList({ name, description }) {
+  async createStaticList({
+                           name,
+                           description
+                         }: {
+    name: string;
+    description: string;
+  }) {
     if (badString(name)) {
       logger.warn(
         "IterableAPIService.createStaticList: name is not a string or is empty"
@@ -179,8 +188,8 @@ export default class IterableAPIService {
         headers: this.#headers,
         body: JSON.stringify({
           name: name,
-          description: description,
-        }),
+          description: description
+        })
       });
       return await response.json();
     } catch (e) {
@@ -189,11 +198,11 @@ export default class IterableAPIService {
     }
   }
 
-  async fetchLists() {
+  async fetchLists(): Promise<UncheckedObject | null> {
     try {
       const response = await fetch("https://api.iterable.com/api/lists", {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       return await response.json();
     } catch (e) {
@@ -219,7 +228,7 @@ export default class IterableAPIService {
       url.searchParams.set("listId", listId);
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       const text = await response.text();
       return text.split("\n").filter(goodEmail);
@@ -254,8 +263,8 @@ export default class IterableAPIService {
           headers: this.#headers,
           body: JSON.stringify({
             listId: listId,
-            subscribers: [...subscribers],
-          }),
+            subscribers: [...subscribers]
+          })
         }
       );
       return await response.json();
@@ -286,7 +295,7 @@ export default class IterableAPIService {
       url.searchParams.set("limit", "200");
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       const json = await response.json();
       events.push(...json["events"]);
@@ -308,7 +317,7 @@ export default class IterableAPIService {
     try {
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       return await response.json();
     } catch (e) {
@@ -317,7 +326,7 @@ export default class IterableAPIService {
     }
   }
 
-  async fetchInAppMessagesForUser(userId) {
+  async fetchInAppMessagesForUser(userId): Promise<UncheckedObject> {
     if (badString(userId)) {
       logger.warn(
         "IterableAPIService.fetchInAppMessagesForUser: userId is not a string or is empty"
@@ -332,7 +341,7 @@ export default class IterableAPIService {
     try {
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       return await response.json();
     } catch (e) {
@@ -341,11 +350,16 @@ export default class IterableAPIService {
     }
   }
 
-  async markInAppMessageAsDelivered(userId, messageId) {
+  async markInAppMessageAsDelivered(
+    //
+    userId: string,
+    messageId: string
+    //
+  ) {
     return this.trackInAppMessageEvent({
       userId: userId,
       messageId: messageId,
-      event: "trackInAppDelivery",
+      event: "trackInAppDelivery"
     });
   }
 
@@ -353,16 +367,21 @@ export default class IterableAPIService {
     return this.trackInAppMessageEvent({
       userId: userId,
       messageId: messageId,
-      event: "trackInAppOpen",
+      event: "trackInAppOpen"
     });
   }
 
   async trackInAppMessageEvent({
-    userId,
-    messageId,
-    event,
-    //
-  }) {
+                                 userId,
+                                 messageId,
+                                 event
+                               }: //
+                                 {
+                                   userId: string;
+                                   messageId: string;
+                                   event: string;
+                                 }) //
+  {
     if (badString(userId)) {
       logger.warn(
         "IterableAPIService.trackInAppMessageEvent: userId is not a string or is empty"
@@ -388,8 +407,8 @@ export default class IterableAPIService {
           headers: this.#headers,
           body: JSON.stringify({
             userId: userId,
-            messageId: messageId,
-          }),
+            messageId: messageId
+          })
         }
       );
       return await response.text();
@@ -399,13 +418,7 @@ export default class IterableAPIService {
     }
   }
 
-  /**
-   *
-   * @param {string} type
-   * @param {object} body
-   * @returns {Promise<null|*>}
-   */
-  async updateTemplate(type, body) {
+  async updateTemplate(type: string, body: UncheckedObject): Promise<string> {
     if (badString(type)) {
       logger.warn(
         "IterableAPIService.updateTemplate: type is not a string or is empty"
@@ -424,7 +437,7 @@ export default class IterableAPIService {
         {
           method: "POST",
           headers: this.#headers,
-          body: JSON.stringify(body),
+          body: JSON.stringify(body)
         }
       );
       return await response.text();
@@ -434,14 +447,20 @@ export default class IterableAPIService {
     }
   }
 
-  /**
-   *
-   * @param {string} email
-   * @param {string} userId
-   * @param dataFields
-   * @returns {Promise<null|*>}
-   */
-  async putUserData({ email, userId, dataFields }) {
+  async putUserData(
+    //
+    {
+      email,
+      userId,
+      dataFields
+    }: //
+      {
+        email?: string;
+        userId?: string;
+        dataFields: UncheckedObject;
+      }
+  ): //
+    Promise<UncheckedObject> {
     if (email === undefined && userId === undefined) {
       logger.warn(
         "IterableAPIService.putUserData: must provide either email or userId"
@@ -456,7 +475,7 @@ export default class IterableAPIService {
     }
     const payload: any = {
       dataFields: dataFields,
-      mergeNestedObjects: true,
+      mergeNestedObjects: true
     };
     const hasEmail = goodString(email);
     if (hasEmail) {
@@ -473,7 +492,7 @@ export default class IterableAPIService {
         {
           method: "POST",
           headers: this.#headers,
-          body: JSON.stringify(payload),
+          body: JSON.stringify(payload)
         }
       );
       return await response.json();
@@ -483,14 +502,13 @@ export default class IterableAPIService {
     }
   }
 
-  /**
-   *
-   * @param {string} catalog
-   * @param {string|number} page
-   * @param {string|number} limit
-   * @returns {Promise<null|*>}
-   */
-  async listCatalogItems(catalog, page = 1, limit = 100) {
+  async listCatalogItems(
+    //
+    catalog: string,
+    page: number = 1,
+    limit: number = 100
+    //
+  ): Promise<UncheckedObject> {
     if (typeof catalog !== "string" || catalog.length === 0) {
       logger.warn(
         "IterableAPIService.listCatalogItems: catalog is not a string or is empty"
@@ -518,7 +536,7 @@ export default class IterableAPIService {
       searchParams.set("pageSize", `${limit}`);
       const response = await fetch(url, {
         method: "GET",
-        headers: this.#headers,
+        headers: this.#headers
       });
       return await response.json();
     } catch (e) {
@@ -527,14 +545,16 @@ export default class IterableAPIService {
     }
   }
 
-  /**
-   *
-   * @param {string} catalog
-   * @param {string} itemId
-   * @param {object} item
-   * @returns {Promise<null|*>}
-   */
-  async createOrReplaceCatalogItem(catalog, itemId, item) {
+  async createOrReplaceCatalogItem(
+    //
+    catalog: string,
+    itemId: string,
+    item: {
+      data: UncheckedObject;
+      //
+    }
+    //
+  ): Promise<any> {
     if (typeof catalog !== "string" || catalog.length === 0) {
       logger.warn(
         "IterableAPIService.createOrReplaceCatalogItem: catalog is not a string or is empty"
@@ -555,14 +575,14 @@ export default class IterableAPIService {
     }
     try {
       const body = {
-        value: item.data ?? item,
+        value: item.data ?? item
       };
       const response = await fetch(
         `https://api.iterable.com/api/catalogs/${catalog}/items/${itemId}`,
         {
           method: "PUT",
           headers: this.#headers,
-          body: JSON.stringify(body),
+          body: JSON.stringify(body)
         }
       );
       return await response.json();
@@ -600,14 +620,14 @@ export default class IterableAPIService {
     }
     try {
       const body = {
-        update: item.data ?? item,
+        update: item.data ?? item
       };
       const response = await fetch(
         `https://api.iterable.com/api/catalogs/${catalog}/items/${itemId}`,
         {
           method: "PATCH",
           headers: this.#headers,
-          body: JSON.stringify(body),
+          body: JSON.stringify(body)
         }
       );
       return await response.json();
@@ -647,14 +667,14 @@ export default class IterableAPIService {
     }
     try {
       const body = {
-        itemIds: itemIds,
+        itemIds: itemIds
       };
       const response = await fetch(
         `https://api.iterable.com/api/catalogs/${catalog}/items/${itemId}`,
         {
           method: "DELETE",
           headers: this.#headers,
-          body: JSON.stringify(body),
+          body: JSON.stringify(body)
         }
       );
       return await response.json();
@@ -685,8 +705,8 @@ export default class IterableAPIService {
           headers: this.#headers,
           body: JSON.stringify({
             campaignId: campaignId,
-            recipientUserId: userId,
-          }),
+            recipientUserId: userId
+          })
         }
       );
       return await response.json();
@@ -696,7 +716,7 @@ export default class IterableAPIService {
     }
   }
 
-  async triggerInAppForEmail(email, campaignId) {
+  async triggerInAppForEmail(email: string, campaignId: string) {
     if (badString(email)) {
       logger.warn(
         "IterableAPIService.triggerInAppForEmail: email is not a string or is empty"
@@ -717,8 +737,8 @@ export default class IterableAPIService {
           headers: this.#headers,
           body: JSON.stringify({
             campaignId: campaignId,
-            recipientEmail: email,
-          }),
+            recipientEmail: email
+          })
         }
       );
       return await response.json();
@@ -730,17 +750,16 @@ export default class IterableAPIService {
 
   /**
    * @deprecated use fetchUserByEmail instead
-   * @param email
    * @returns {Promise<{ user: * }>}
    */
-  async fetchUserIterableData(email) {
+  async fetchUserIterableData(email: string): Promise<{ user: IterableUser }> {
     if (badString(email) || !email.match(emailRegExp)) {
       throw new Error(
         "IterableAPIService.fetchUserIterableData: email provided is not a valid email address"
       );
     }
     return {
-      user: await this.fetchUserByEmail(email),
+      user: await this.fetchUserByEmail(email)
     };
   }
 }
