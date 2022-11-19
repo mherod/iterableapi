@@ -24,6 +24,18 @@ const caches = {
   }),
 };
 
+export interface IterableUser {
+  userId: string;
+}
+
+// interface IterablePutUserDataPayload {
+//   email: any;
+//   userId: any;
+//   preferUserId: boolean;
+//   dataFields: any;
+//   mergeNestedObjects: boolean;
+// }
+
 // noinspection JSUnusedGlobalSymbols
 export default class IterableAPIService {
   #apiKey;
@@ -51,8 +63,8 @@ export default class IterableAPIService {
     };
   }
 
-  async fetchUserIdByEmail(email) {
-    const user = await this.fetchUserByEmail(email);
+  async fetchUserIdByEmail(email): Promise<string> {
+    const user: IterableUser = await this.fetchUserByEmail(email);
     return user.userId;
   }
 
@@ -61,7 +73,7 @@ export default class IterableAPIService {
    * @param {string} email
    * @return {Promise<*|null>}
    */
-  async fetchUserByEmail(email) {
+  async fetchUserByEmail(email): Promise<IterableUser> {
     if (badEmail(email)) {
       logger.warn(
         "IterableAPIService.fetchUserByEmail: email is not a valid email"
@@ -92,7 +104,7 @@ export default class IterableAPIService {
           responseContentType
         );
       }
-      return user;
+      return user as IterableUser;
     } catch (e) {
       logger.warn("Failed to fetch", e);
       return null;
@@ -442,7 +454,7 @@ export default class IterableAPIService {
       );
       return null;
     }
-    const payload = {
+    const payload: any = {
       dataFields: dataFields,
       mergeNestedObjects: true,
     };
