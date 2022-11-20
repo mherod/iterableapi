@@ -7,7 +7,7 @@
     "commit": "git reset HEAD -- . && git add . && git commit -m \"Update $(basename $PWD)\"",
     "build": "tsc && parcel build",
     "prepare": "npm run build",
-    "postpublish": "npm run commit",
+    "prepublish": "npm run commit",
     "pretest": "npm run build",
     "test": "jest",
     "prettier": "prettier --write ."
